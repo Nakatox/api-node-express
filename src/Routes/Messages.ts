@@ -19,7 +19,7 @@ router.post('/messages', async (req, res) => {
     // @ts-ignore
     message.user = await User.findOne({where: { id: req.user.id}});
 
-    let newMessage = await getConnection().manager.save(message);
+    let newMessage = await message.save();
 
     res.json({status: 200, data: newMessage});
 })

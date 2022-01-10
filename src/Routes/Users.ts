@@ -2,6 +2,8 @@ import { getConnection } from "typeorm";
 import { User } from '../Models/User';
 import * as sha512 from 'js-sha512';
 import express from 'express';
+import { connexion } from '../database';
+
 
 let router = express.Router();
 
@@ -20,7 +22,7 @@ router.post('/users', async (req, res) => {
     user.email = req.body.email;
     user.password = sha512.sha512(req.body.password);
 
-    let newUser = await getConnection().manager.save(user);
+    let newUser = await user.save();
 
     res.json({status: 200, data: newUser});
 })

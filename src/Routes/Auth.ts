@@ -1,7 +1,7 @@
 import { User } from '../Models/User';
 import * as sha512 from 'js-sha512';
 import * as jwt from 'jsonwebtoken';
-import { secretKey } from '../app';
+import { secretKey } from '../key';
 import express from 'express';
 
 let router = express.Router();

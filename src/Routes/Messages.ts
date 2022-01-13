@@ -9,9 +9,14 @@ import * as validator from 'express-validator';
 let router = express.Router();
 
 router.get('/messages', async (req, res) => {
-    
     let messages = await Message.find({relations:[ "user" ]})
 
+    res.json({status: 200, data: messages});
+})
+
+router.get('/messages/:id', async (req, res) => {
+    let messages = await Message.find({where: {id: req.params.id},relations:[ "user" ]})
+    
     res.json({status: 200, data: messages});
 })
 
@@ -23,12 +28,12 @@ router.post('/messages',messageValidator, async (req, res) => {
             return res.status(400).json({ errors: errors.array() });
         }else{
             let message = new Message();
-            message.text = req.body.content
-            // @ts-ignore
-            message.user = await User.findOne({where: { id: req.user.id}});
+            message.text = req.body.text
+            message.user = req.user
 
             let newMessage = await message.save();
 
+            req.io.emit('newMessage', newMessage);
             res.json({status: 200, data: newMessage});
         }
 })

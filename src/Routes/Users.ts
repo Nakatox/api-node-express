@@ -15,11 +15,21 @@ router.get('/users', async (req, res) => {
     res.json({status: 200, data: users});
 })
 
+router.get('/users/:id', async (req, res) => {
+    let user = await User.find({where: {id: req.params.id},relations:[ "messages" ]})
+    
+    res.json({status: 200, data: user});
+})
+
 router.post('/users', userValidator , async (req, res) => {
         
         const errors = validator.validationResult(req);
+        let checkUsed = await User.findOne({where: { email: req.body.email}});
 
-        if (!errors.isEmpty()) {
+        if(checkUsed){
+            return res.status(400).json({ errors: [{ msg: "Email already used" }] });
+        }
+        else if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }else{
             let user = new User();
@@ -35,11 +45,7 @@ router.post('/users', userValidator , async (req, res) => {
 })
 
 router.get('/users/me', async (req, res) => {
-
-    // @ts-ignore
-    let user = await User.findOne({where: { id: req.user.id}});
-
-    res.json({status: 200, data: user});
+    res.json({status: 200, data: req.user});
 })
 
 
